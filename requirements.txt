@@ -1,0 +1,17 @@
+
+kagglehub
+matplotlib
+seaborn
+scikit-learn
+pandas
+numpy
+notebook
+wonderwords
+pandas
+matplotlib
+pygame
+pandas
+scikit-learn
+matplotlib
+scipy
+#torch
