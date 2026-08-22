@@ -3,6 +3,7 @@ import os
 import joblib
 import pandas as pd
 from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split
 
 
 def download_data() -> str:
@@ -100,3 +101,32 @@ def fit_encoder(X_train: pd.DataFrame,
     print(f"Features handled: {len(feature_columns)} (all passed through)")
 
     return encoder
+
+
+def prepare_and_split(
+    df: pd.DataFrame,
+    test_size: float = 0.2,
+    random_state: int = 42
+):
+    print("\n" + "=" * 60)
+    print("SPLITTING DATA")
+    print("=" * 60)
+
+    X = df.drop(columns=["Class"])
+    y = df["Class"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=test_size,
+        stratify=y,
+        random_state=random_state
+    )
+
+    # Print split summary
+    print(f"Training set size : {X_train.shape[0]} samples")
+    print(f"Test set size     : {X_test.shape[0]} samples")
+    print(f"Training fraud %  : {y_train.mean() * 100:.4f}%")
+    print(f"Test fraud %      : {y_test.mean() * 100:.4f}%")
+
+    return X_train, X_test, y_train, y_test
