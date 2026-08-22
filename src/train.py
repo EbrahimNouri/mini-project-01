@@ -173,3 +173,41 @@ def experiment_hyperparameter(X_train, X_test, y_train, y_test, random_state: in
 	print("  - The best depth provides a good balance between train/test performance.")
 
 	return results
+
+
+def experiment_threshold(model, X_test, y_test):
+	print("\n" + "=" * 60)
+	print("EXPERIMENT 3: CLASSIFICATION THRESHOLD ANALYSIS")
+	print("=" * 60)
+	y_proba = model.predoba(X_test)[:, 1]
+	thresholds = [0.3, 0.5, 0.7]
+	results = []
+
+	for threshold in thresholds:
+		y_pred_custom = (y_proba >= threshold).astype(int)
+		precision = precision_score(y_test, y_pred_custom)
+		recall = recall_score(y_test, y_pred_custom)
+		f1 = f1_score(y_test, y_pred_custom)
+		results.append({
+			"threshold": threshold,
+			"precision": precision,
+			"recall": recall,
+			"f1": f1,
+		})
+
+	print("\n| Threshold | Precision | Recall  | F1     |")
+	print("|-----------|-----------|---------|--------|")
+	for r in results:
+		print(
+			f"| {r['threshold']:>9} | {r['precision']:.4f}   | {r['recall']:.4f} | {r['f1']:.4f} |"
+		)
+
+	print("\nExplanation:")
+	print("  - Lowering the threshold (e.g., 0.3) → more transactions flagged as fraud")
+	print("      → Recall increases (catch more fraud) but Precision decreases (more false alarms)")
+	print("  - Raising the threshold (e.g., 0.7) → fewer transactions flagged as fraud")
+	print("      → Precision increases (fewer false alarms) but Recall decreases (miss some fraud)")
+	print("  - For fraud detection, a lower threshold is often preferred because")
+	print("    the cost of missing fraud (FN) is higher than the cost of a false alarm (FP).")
+
+	return results
