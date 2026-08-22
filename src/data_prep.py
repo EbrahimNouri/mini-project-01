@@ -1,5 +1,8 @@
 import os
+
+import joblib
 import pandas as pd
+from sklearn.compose import ColumnTransformer
 
 
 def download_data() -> str:
@@ -71,3 +74,29 @@ def analyze_data(df: pd.DataFrame) -> None:
     print()
     print("NOTE: The dataset is highly imbalanced. Accuracy alone is misleading!")
     print("=" * 60)
+
+
+def fit_encoder(X_train: pd.DataFrame,
+                save_path: str = "models/encoder.pkl"
+                ) -> ColumnTransformer:
+    print("\n" + "=" * 60)
+    print("ENCODER FITTING")
+    print("=" * 60)
+
+    feature_columns = list(X_train.columns)
+
+    encoder = ColumnTransformer(
+        transformers=[
+            ("passthrough", "passthrough", feature_columns)
+        ],
+        remainder="drop"
+    )
+
+    encoder.fit(X_train)
+
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    joblib.dump(encoder, save_path)
+    print(f"Encoder saved to: {save_path}")
+    print(f"Features handled: {len(feature_columns)} (all passed through)")
+
+    return encoder
