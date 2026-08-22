@@ -495,5 +495,5 @@ def run_training_pipeline(
 if __name__ == "__main__":
     from data_prep import run_data_pipeline
 
-    X_train_scaled, X_test_scaled, y_train, y_test = run_data_pipeline()
+    X_train_scaled, X_test_scaled, y_train, y_test = run_data_pipeline("../data/creditcard.csv")
     run_training_pipeline(X_train_scaled, X_test_scaled, y_train, y_test)
