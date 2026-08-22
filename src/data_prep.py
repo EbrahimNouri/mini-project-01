@@ -132,10 +132,11 @@ def prepare_and_split(
 
     return X_train, X_test, y_train, y_test
 
+
 def scale_feature(
     X_train: pd.DataFrame,
     X_test: pd.DataFrame,
-    save_path:str="models/scaler.pkl"
+    save_path: str = "models/scaler.pkl"
 ):
     print("\n" + "=" * 60)
     print("FEATURE SCALING")
@@ -150,3 +151,18 @@ def scale_feature(
     print(f"Scaler saved to: {save_path}")
 
     return X_train_scaled, X_test_scaled
+
+
+def run_data_pipeline(csv_path: str = "data/creditcard.csv"):
+    df = load_data(csv_path)
+    analyze_data(df)
+    X_train, X_test, y_train, y_test = prepare_and_split(df)
+    fit_encoder(X_train)
+    X_train_scaled, X_test_scaled = scale_feature(X_train, X_test)
+    print("\nData preparation complete!")
+    print("Saved artifacts: models/encoder.pkl, models/scaler.pkl")
+    return X_train_scaled, X_test_scaled, y_train, y_test
+
+
+if __name__ == "__main__":
+    run_data_pipeline()
