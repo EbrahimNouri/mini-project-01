@@ -2,6 +2,7 @@ import os
 
 import joblib
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 
@@ -130,3 +131,22 @@ def prepare_and_split(
     print(f"Test fraud %      : {y_test.mean() * 100:.4f}%")
 
     return X_train, X_test, y_train, y_test
+
+def scale_feature(
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    save_path:str="models/scaler.pkl"
+):
+    print("\n" + "=" * 60)
+    print("FEATURE SCALING")
+    print("=" * 60)
+
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    joblib.dump(scaler, save_path)
+    print(f"Scaler saved to: {save_path}")
+
+    return X_train_scaled, X_test_scaled
