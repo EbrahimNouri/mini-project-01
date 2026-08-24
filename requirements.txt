@@ -9,5 +9,6 @@ seaborn
 notebook
 pyfiglet
 torch
-pyfiglet
-pyfiglet
+uvicorn
+fastapi
+pydantic
