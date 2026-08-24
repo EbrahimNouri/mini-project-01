@@ -22,12 +22,12 @@ except ImportError:
 MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
 
 SEED = 42
-EPOCHS = 40
+EPOCHS = 60
 BATCH_SIZE = 2048
 LEARNING_RATE = 0.0005
 VALIDATION_FRACTION = 0.1
 THRESHOLD = 0.5
-REPORT_THRESHOLDS = [0.3, 0.5, 0.7, 0.9]
+REPORT_THRESHOLDS = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
 
 class FraudMLP(nn.Module):
@@ -110,12 +110,16 @@ def train_mlp_model(X_train_scaled, X_test_scaled, y_train, y_test) -> dict:
 
     n_pos = float((y_tr_t == 1).sum())
     n_neg = float((y_tr_t == 0).sum())
-    pos_weight_value = n_neg / n_pos
+    imbalance_ratio = n_neg / n_pos
+    pos_weight_value = float(np.sqrt(imbalance_ratio))
 
     print(f"\nTraining rows   : {len(X_tr_t)} (fraud: {int(n_pos)})")
     print(f"Validation rows : {len(X_val_t)} (fraud: {int((y_val_t == 1).sum())})")
     print(f"Test rows       : {len(X_test_t)} (fraud: {int(np.asarray(y_test).sum())})")
-    print(f"BCE pos_weight  : {pos_weight_value:.1f} (= n_legit / n_fraud)")
+    print(f"Imbalance ratio : {imbalance_ratio:.1f} -> BCE pos_weight "
+          f"{pos_weight_value:.1f} (sqrt ratio: strong recall boost without")
+    print("                  distorting the decision boundary the way the full")
+    print("                  ratio does)")
     print(f"Architecture    : {X_tr_t.shape[1]} -> 64 -> 32 -> 1 (ReLU + Dropout(0.2))")
 
     train_loader = DataLoader(
