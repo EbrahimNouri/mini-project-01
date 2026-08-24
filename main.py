@@ -12,7 +12,6 @@ from src.train_mlp import train_mlp_model
 
 
 def main():
-    """Run the complete fraud detection pipeline."""
     print("=" * 60)
     print("CREDIT CARD FRAUD DETECTION PIPELINE")
     print("=" * 60)
