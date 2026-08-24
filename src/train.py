@@ -309,17 +309,25 @@ def run_training_pipeline(
     threshold_results = experiment_threshold(lr_model, X_test_scaled, y_test)
 
     print("\n" + "=" * 60)
-    print("SAVING FINAL MODEL")
+    print("SAVING ALL MODELS")
     print("=" * 60)
 
     lr_model.fit(X_train_scaled, y_train)
 
     os.makedirs("models", exist_ok=True)
     joblib.dump(lr_model, "models/model.pkl")
-    print("Final model (Logistic Regression) saved to models/model.pkl")
+    print("Logistic Regression saved to models/model.pkl (final deployed model)")
+
+    joblib.dump(knn_model, "models/knn_model.pkl")
+    print("KNN (K=5) saved to models/knn_model.pkl")
+
+    joblib.dump(dt_model, "models/dt_model.pkl")
+    print("Decision Tree saved to models/dt_model.pkl")
 
     required_artifacts = [
         "models/model.pkl",
+        "models/knn_model.pkl",
+        "models/dt_model.pkl",
         "models/encoder.pkl",
         "models/scaler.pkl",
     ]

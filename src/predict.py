@@ -79,18 +79,20 @@ def predict_transaction(data: dict, threshold: float = 0.5) -> dict:
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python src/predict.py <input.json> <output.json>")
+    if len(sys.argv) not in (3, 4):
+        print("Usage: python src/predict.py <input.json> <output.json> [threshold]")
         sys.exit(1)
 
     input_path = sys.argv[1]
     output_path = sys.argv[2]
 
+    threshold = float(sys.argv[3]) if len(sys.argv) == 4 else 0.5
+
     with open(input_path, "r") as f:
         input_data = json.load(f)
 
     # Run prediction (applies encoder => scaler => model)
-    result = predict_transaction(input_data)
+    result = predict_transaction(input_data, threshold=threshold)
 
     with open(output_path, "w") as f:
         json.dump(result, f, indent=2)

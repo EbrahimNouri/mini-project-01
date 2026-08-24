@@ -173,9 +173,11 @@ Saved artifacts (produced by `python main.py`):
 
 ```
 models/model.pkl     <- trained Logistic Regression (final deployed model)
+models/knn_model.pkl <- trained KNN (K=5)
+models/dt_model.pkl  <- trained Decision Tree (max_depth=10)
+models/mlp_model.pt  <- bonus PyTorch MLP
 models/scaler.pkl    <- StandardScaler fitted on training data
 models/encoder.pkl   <- identity passthrough ColumnTransformer
-models/mlp_model.pt  <- bonus PyTorch MLP (comparison model)
 ```
 
 ### Why Logistic Regression despite higher raw scores elsewhere?
@@ -216,10 +218,21 @@ Download `creditcard.csv` from [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/
 ### Full pipeline (training)
 
 ```bash
-python main.py
+python main.py          # full training - always retrains and saves all models
+python main.py fast     # reuse saved models (see below)
 ```
 
-Runs everything: data prep -> split -> scaling -> LR/KNN/DT training + evaluation -> 5-fold stratified CV -> Experiments 1-3 -> saves sklearn artifacts -> trains the bonus PyTorch MLP (with overfitting analysis) -> saves `models/mlp_model.pt`. Takes several minutes (KNN cross-validation dominates).
+`python main.py` runs everything: data prep -> split -> scaling -> LR/KNN/DT training + evaluation -> 5-fold stratified CV -> Experiments 1-3 -> saves sklearn artifacts -> trains the bonus PyTorch MLP (with overfitting analysis) -> saves `models/mlp_model.pt`. Takes several minutes (KNN cross-validation dominates).
+
+### Fast mode (reuse saved models)
+
+```bash
+python main.py fast
+```
+
+Loads all four learned models straight from `models/` instead of retraining, prints a quick Accuracy/Precision/Recall/F1 comparison table on the test set, and finishes with a prediction demo on `input.json`.
+
+First time only: if any model file is missing, it automatically runs the full training once to create them, then behaves like every other fast run. Delete the contents of `models/` to force a fresh training.
 
 Individual stages can also be run directly:
 
@@ -232,22 +245,23 @@ python src/train_mlp.py       # bonus MLP only
 ### Prediction
 
 ```bash
-python src/predict.py input.json    # input.json included as an example
+python src/predict.py input.json output.json             # default threshold 0.5
+python src/predict.py input.json output.json 0.3         # custom threshold (final model choice: 0.3)
 ```
 
-Output goes to the console and to `output.json` next to the input file:
+`input.json` (included) holds one transaction with all 30 features; the result is printed and written to `output.json`:
 
 ```json
 {
-  "prediction": "Fraud",
-  "class_id": 1,
-  "probability": 0.3477,
-  "threshold": 0.3,
+  "prediction": "Legitimate",
+  "class_id": 0,
+  "probability": 0.0005,
+  "threshold": 0.5,
   "status": "success"
 }
 ```
 
-A list of transactions in the input file returns a list of predictions. Missing features produce `"status": "error"` with details instead of a guess.
+Missing features produce `"status": "error"` with the list of what is missing instead of a guess. `python main.py fast` also ends with a demo that scores `input.json` through all four loaded models at once.
 
 ---
 
