@@ -7,6 +7,7 @@ joblib
 matplotlib
 seaborn
 notebook
-#torch  # uncomment only for the bonus MLP model
+pyfiglet
+torch
 pyfiglet
 pyfiglet

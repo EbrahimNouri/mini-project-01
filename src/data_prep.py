@@ -55,10 +55,10 @@ def analyze_data(df: pd.DataFrame) -> None:
     else:
         print("No missing values found in any column.")
 
-    n_dplidates = df.duplicated().sum()
-    print(f"\nDuplicate Rows: {n_dplidates}")
-    if n_dplidates > 0:
-        print(f"Percentage of duplicates: {n_dplidates / len(df) * 100}%")
+    n_duplicates = df.duplicated().sum()
+    print(f"\nDuplicate Rows: {n_duplicates}")
+    if n_duplicates > 0:
+        print(f"Percentage of duplicates: {n_duplicates / len(df) * 100}%")
 
     print("\nClass Distribution:")
     class_counts = df["Class"].value_counts()
@@ -161,7 +161,7 @@ def run_data_pipeline(csv_path: str = "data/creditcard.csv"):
     X_train_scaled, X_test_scaled = scale_feature(X_train, X_test)
     print("\nData preparation complete!")
     print("Saved artifacts: models/encoder.pkl, models/scaler.pkl")
-    return X_train_scaled, X_test_scaled, y_train, y_test
+    return X_train_scaled, X_test_scaled, X_train, X_test, y_train, y_test
 
 
 if __name__ == "__main__":

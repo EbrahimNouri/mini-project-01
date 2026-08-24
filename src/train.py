@@ -39,7 +39,7 @@ def train_and_evaluate(model, X_train, X_test, y_train, y_test, model_name: str)
     print()
     print(f"True Negatives  (correctly predicted legit): {tn}")
     print(f"False Positives (predicted fraud, actually legit): {fp}")
-    print(f"False Negatives (predicted legit, actually fraud): {fn}  ← DANGEROUS!")
+    print(f"False Negatives (predicted legit, actually fraud): {fn}  <- DANGEROUS!")
     print(f"True Positives  (correctly predicted fraud): {tp}")
     print()
 
@@ -76,9 +76,9 @@ def cross_validate_model(model, X, y, model_name: str, folds: int = 5, random_st
     mean_p = precision_scores.mean()
     mean_r = recall_scores.mean()
     mean_f1 = f1_scores.mean()
-    print(f"\n  Mean Precision: {mean_p:.4f} (±{precision_scores.std():.4f})")
-    print(f"  Mean Recall   : {mean_r:.4f} (±{recall_scores.std():.4f})")
-    print(f"  Mean F1       : {mean_f1:.4f} (±{f1_scores.std():.4f})")
+    print(f"\n  Mean Precision: {mean_p:.4f} (+/-{precision_scores.std():.4f})")
+    print(f"  Mean Recall   : {mean_r:.4f} (+/-{recall_scores.std():.4f})")
+    print(f"  Mean F1       : {mean_f1:.4f} (+/-{f1_scores.std():.4f})")
 
     return {
         "model_name": model_name,
@@ -88,7 +88,7 @@ def cross_validate_model(model, X, y, model_name: str, folds: int = 5, random_st
     }
 
 
-def experiment_scaling_effect(X_train, X_test, y_train, y_test):
+def experiment_scaling_effect(X_train_raw, X_test_raw, y_train, y_test):
     print("\n" + "=" * 60)
     print("EXPERIMENT 1: EFFECT OF FEATURE SCALING ON KNN")
     print("=" * 60)
@@ -96,8 +96,8 @@ def experiment_scaling_effect(X_train, X_test, y_train, y_test):
     results = {}
 
     knn_no_scale = KNeighborsClassifier(n_neighbors=5)
-    knn_no_scale.fit(X_train, y_train)
-    y_pred_no_scale = knn_no_scale.predict(X_test)
+    knn_no_scale.fit(X_train_raw, y_train)
+    y_pred_no_scale = knn_no_scale.predict(X_test_raw)
 
     results["KNN_Without_Scaling"] = {
         "precision": precision_score(y_test, y_pred_no_scale),
@@ -106,8 +106,8 @@ def experiment_scaling_effect(X_train, X_test, y_train, y_test):
     }
 
     scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
+    X_train_scaled = scaler.fit_transform(X_train_raw)
+    X_test_scaled = scaler.transform(X_test_raw)
     knn_scaled = KNeighborsClassifier(n_neighbors=5)
     knn_scaled.fit(X_train_scaled, y_train)
     y_pred_scaled = knn_scaled.predict(X_test_scaled)
@@ -122,7 +122,7 @@ def experiment_scaling_effect(X_train, X_test, y_train, y_test):
     print("\n| Model                  | Scaling     | Precision | Recall  | F1     |")
     print("|------------------------|-------------|-----------|---------|--------|")
     for name, m in results.items():
-        scaling = "Yes" if "With" in name else "No"
+        scaling = "No" if "Without" in name else "Yes"
         print(
             f"| KNN                    | {scaling:>11} | {m['precision']:.4f}   | {m['recall']:.4f} | {m['f1']:.4f} |"
         )
@@ -173,8 +173,8 @@ def experiment_hyperparameter(X_train, X_test, y_train, y_test, random_state: in
 
     print("\nAnalysis:")
     print("  - When max_depth=None, the tree perfectly memorizes training data")
-    print("    (Train F1 ≈ 1.0) but performs poorly on test data → OVERFITTING.")
-    print("  - Small max_depth (e.g., 2) underfits — too simple to capture patterns.")
+    print("    (Train F1 ~ 1.0) but performs poorly on test data -> OVERFITTING.")
+    print("  - Small max_depth (e.g., 2) underfits -- too simple to capture patterns.")
     print("  - The best depth provides a good balance between train/test performance.")
 
     return results
@@ -210,10 +210,10 @@ def experiment_threshold(model, X_test, y_test):
         )
 
     print("\nExplanation:")
-    print("  - Lowering the threshold (e.g., 0.3) → more transactions flagged as fraud")
-    print("      → Recall increases (catch more fraud) but Precision decreases (more false alarms)")
-    print("  - Raising the threshold (e.g., 0.7) → fewer transactions flagged as fraud")
-    print("      → Precision increases (fewer false alarms) but Recall decreases (miss some fraud)")
+    print("  - Lowering the threshold (e.g., 0.3) -> more transactions flagged as fraud")
+    print("      -> Recall increases (catch more fraud) but Precision decreases (more false alarms)")
+    print("  - Raising the threshold (e.g., 0.7) -> fewer transactions flagged as fraud")
+    print("      -> Precision increases (fewer false alarms) but Recall decreases (miss some fraud)")
     print("  - For fraud detection, a lower threshold is often preferred because")
     print("    the cost of missing fraud (FN) is higher than the cost of a false alarm (FP).")
 
@@ -225,6 +225,8 @@ def run_training_pipeline(
     X_test_scaled,
     y_train,
     y_test,
+    X_train_raw=None,
+    X_test_raw=None,
     X_full_scaled=None,
     y_full=None,
     random_state: int = 42
@@ -289,8 +291,15 @@ def run_training_pipeline(
             f"| {cv['model_name']:<22} | {cv['mean_precision']:.4f}         | {cv['mean_recall']:.4f}      | {cv['mean_f1']:.4f}  |"
         )
 
+    if X_train_raw is None or X_test_raw is None:
+        raise ValueError(
+            "run_training_pipeline needs the unscaled splits too: "
+            "pass X_train_raw and X_test_raw from run_data_pipeline() "
+            "so Experiment 1 can compare KNN with vs without scaling."
+        )
+
     scaling_results = experiment_scaling_effect(
-        X_train_scaled, X_test_scaled, y_train, y_test
+        X_train_raw, X_test_raw, y_train, y_test
     )
 
     hyperparam_results = experiment_hyperparameter(
@@ -331,6 +340,23 @@ def run_training_pipeline(
 if __name__ == "__main__":
     from data_prep import run_data_pipeline
 
-    X_train_scaled, X_test_scaled, y_train, y_test = run_data_pipeline("../data/creditcard.csv")
+    data_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "data", "creditcard.csv"
+    )
+    (
+        X_train_scaled,
+        X_test_scaled,
+        X_train_raw,
+        X_test_raw,
+        y_train,
+        y_test,
+    ) = run_data_pipeline(data_path)
     print()
-    run_training_pipeline(X_train_scaled, X_test_scaled, y_train, y_test)
+    run_training_pipeline(
+        X_train_scaled,
+        X_test_scaled,
+        y_train,
+        y_test,
+        X_train_raw,
+        X_test_raw,
+    )
