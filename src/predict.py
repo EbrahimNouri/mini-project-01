@@ -1,3 +1,4 @@
+# [Section 14] Prediction script: JSON input -> JSON output using the saved model pipeline.
 import os
 import sys
 import json
@@ -42,6 +43,7 @@ def load_artifacts(
     return model, encoder, scaler
 
 
+# [Section 14] One transaction -> encoder -> scaler -> model -> probability -> class label.
 def predict_transaction(data: dict, threshold: float = 0.5) -> dict:
 
     model, encoder, scaler = load_artifacts()

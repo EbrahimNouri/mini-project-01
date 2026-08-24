@@ -30,6 +30,7 @@ THRESHOLD = 0.5
 REPORT_THRESHOLDS = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
 
+# [Phase 3 - Model 4 Bonus] Simple MLP architecture (PyTorch): nonlinear decision boundaries.
 class FraudMLP(nn.Module):
     def __init__(self, input_dim: int):
         super().__init__()
@@ -88,6 +89,7 @@ def metrics_at_threshold(y_true, proba, threshold=THRESHOLD):
     }
 
 
+# [Phase 3 - Model 4 Bonus] Train the MLP, evaluate on the test set and analyze overfitting behavior.
 def train_mlp_model(X_train_scaled, X_test_scaled, y_train, y_test) -> dict:
     print("\n" + "=" * 60)
     print("BONUS MODEL: SIMPLE MLP (PyTorch)")

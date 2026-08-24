@@ -1,3 +1,4 @@
+# [Section 2.1] Standard ML pipeline flow: raw data -> prep -> split -> scale -> train -> evaluate -> predict.
 import sys
 import os
 import numpy as np
@@ -156,3 +157,4 @@ def main(argv):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
+    #TODO Ensemble Learning: KNN + MLP

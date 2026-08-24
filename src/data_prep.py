@@ -21,6 +21,7 @@ def download_data() -> str:
         return "data/creditcard.csv"
 
 
+# [Phase 1] Load the dataset and show its structure (shape, head, dtypes).
 def load_data(csv_path: str = "data/creditcard.csv") -> pd.DataFrame:
     df = pd.read_csv(csv_path)
 
@@ -42,6 +43,7 @@ def load_data(csv_path: str = "data/creditcard.csv") -> pd.DataFrame:
     return df
 
 
+# [Phase 1 + Phase 2] Analyze missing values, duplicates and class distribution.
 def analyze_data(df: pd.DataFrame) -> None:
     print("=" * 60)
     print("DATA QUALITY ANALYSIS")
@@ -78,6 +80,7 @@ def analyze_data(df: pd.DataFrame) -> None:
     print("=" * 60)
 
 
+# [Section 15] Encoder artifact (identity passthrough) saved for the prediction pipeline.
 def fit_encoder(X_train: pd.DataFrame,
                 save_path: str = "models/encoder.pkl"
                 ) -> ColumnTransformer:
@@ -104,6 +107,7 @@ def fit_encoder(X_train: pd.DataFrame,
     return encoder
 
 
+# [Phase 2] Stratified train/test split to preserve the fraud ratio.
 def prepare_and_split(
     df: pd.DataFrame,
     test_size: float = 0.2,
@@ -133,6 +137,7 @@ def prepare_and_split(
     return X_train, X_test, y_train, y_test
 
 
+# [Phase 2] Feature scaling fitted on train only AFTER split (no data leakage).
 def scale_feature(
     X_train: pd.DataFrame,
     X_test: pd.DataFrame,

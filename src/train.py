@@ -17,6 +17,7 @@ from sklearn.metrics import (
 from sklearn.preprocessing import StandardScaler
 
 
+# [Section 8] Report Accuracy, Precision, Recall, F1 and Confusion Matrix.
 def train_and_evaluate(model, X_train, X_test, y_train, y_test, model_name: str):
     print("\n" + "=" * 60)
     print(f"MODEL: {model_name}")
@@ -59,6 +60,7 @@ def train_and_evaluate(model, X_train, X_test, y_train, y_test, model_name: str)
     }
 
 
+# [Section 9] 5-Fold Stratified Cross Validation on Precision, Recall and F1.
 def cross_validate_model(model, X, y, model_name: str, folds: int = 5, random_state: int = 42):
     print("\n" + "-" * 60)
     print(f"CROSS-VALIDATION: {model_name}")
@@ -88,6 +90,7 @@ def cross_validate_model(model, X, y, model_name: str, folds: int = 5, random_st
     }
 
 
+# [Section 10] Mandatory Experiment 1: effect of feature scaling on KNN.
 def experiment_scaling_effect(X_train_raw, X_test_raw, y_train, y_test):
     print("\n" + "=" * 60)
     print("EXPERIMENT 1: EFFECT OF FEATURE SCALING ON KNN")
@@ -138,6 +141,7 @@ def experiment_scaling_effect(X_train_raw, X_test_raw, y_train, y_test):
     return results
 
 
+# [Section 11] Mandatory Experiment 2: Decision Tree max_depth hyperparameter study.
 def experiment_hyperparameter(X_train, X_test, y_train, y_test, random_state: int = 42):
     print("\n" + "=" * 60)
     print("EXPERIMENT 2: HYPERPARAMETER ANALYSIS (Decision Tree max_depth)")
@@ -147,7 +151,9 @@ def experiment_hyperparameter(X_train, X_test, y_train, y_test, random_state: in
     results = []
 
     for depth in depths:
-        dt = DecisionTreeClassifier(max_depth=depth, random_state=random_state)
+        dt = DecisionTreeClassifier(max_depth=depth,
+                                    # class_weight="balanced",
+                                    random_state=random_state)
         dt.fit(X_train, y_train)
         y_train_pred = dt.predict(X_train)
         y_test_pred = dt.predict(X_test)
@@ -180,6 +186,7 @@ def experiment_hyperparameter(X_train, X_test, y_train, y_test, random_state: in
     return results
 
 
+# [Section 12] Mandatory Experiment 3: classification thresholds 0.3 / 0.5 / 0.7.
 def experiment_threshold(model, X_test, y_test):
     print("\n" + "=" * 60)
     print("EXPERIMENT 3: CLASSIFICATION THRESHOLD ANALYSIS")
@@ -241,7 +248,9 @@ def run_training_pipeline(
 
     results = []
 
-    lr_model = LogisticRegression(max_iter=1000, random_state=random_state)
+    lr_model = LogisticRegression(max_iter=1000,
+                                  # class_weight="balanced",
+                                  random_state=random_state)
     lr_result = train_and_evaluate(
         lr_model, X_train_scaled, X_test_scaled, y_train, y_test,
         "Logistic Regression"
@@ -255,7 +264,9 @@ def run_training_pipeline(
     )
     results.append(knn_result)
 
-    dt_model = DecisionTreeClassifier(max_depth=10, random_state=random_state)
+    dt_model = DecisionTreeClassifier(max_depth=10,
+                                      # class_weight="balanced",
+                                      random_state=random_state)
     dt_result = train_and_evaluate(
         dt_model, X_train_scaled, X_test_scaled, y_train, y_test,
         "Decision Tree (max_depth=10)"
