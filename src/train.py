@@ -2,7 +2,6 @@ import os
 
 import joblib
 import numpy as np
-from pygame.examples.video import x_
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -185,7 +184,9 @@ def experiment_threshold(model, X_test, y_test):
     print("\n" + "=" * 60)
     print("EXPERIMENT 3: CLASSIFICATION THRESHOLD ANALYSIS")
     print("=" * 60)
-    y_proba = model.predoba(X_test)[:, 1]
+
+    y_proba = model.predict_proba(X_test)[:, 1]
+
     thresholds = [0.3, 0.5, 0.7]
     results = []
 
@@ -308,7 +309,6 @@ def run_training_pipeline(
     joblib.dump(lr_model, "models/model.pkl")
     print("Final model (Logistic Regression) saved to models/model.pkl")
 
-    # Verify all three required artifacts exist
     required_artifacts = [
         "models/model.pkl",
         "models/encoder.pkl",
@@ -328,11 +328,9 @@ def run_training_pipeline(
     return results, cv_results, scaling_results, hyperparam_results, threshold_results
 
 
-# ---------------------------------------------------------------------------
-# Allow running this module directly
-# ---------------------------------------------------------------------------
 if __name__ == "__main__":
     from data_prep import run_data_pipeline
 
     X_train_scaled, X_test_scaled, y_train, y_test = run_data_pipeline("../data/creditcard.csv")
+    print()
     run_training_pipeline(X_train_scaled, X_test_scaled, y_train, y_test)

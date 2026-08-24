@@ -1,17 +1,12 @@
-
 kagglehub
-matplotlib
-seaborn
 scikit-learn
 pandas
 numpy
-notebook
-wonderwords
-pandas
-matplotlib
-pygame
-pandas
-scikit-learn
-matplotlib
 scipy
-#torch
+joblib
+matplotlib
+seaborn
+notebook
+#torch  # uncomment only for the bonus MLP model
+pyfiglet
+pyfiglet

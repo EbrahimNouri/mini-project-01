@@ -1,16 +1,37 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import sys
+import os
+import pyfiglet
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# Add the src/ directory to the Python path so we can import modules
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+from src.data_prep import run_data_pipeline
+from src.train import run_training_pipeline
+
+
+def main():
+    """Run the complete fraud detection pipeline."""
+    print("=" * 60)
+    print("CREDIT CARD FRAUD DETECTION PIPELINE")
+    print("=" * 60)
+
+    X_train_scaled, X_test_scaled, y_train, y_test = run_data_pipeline()
+
+    print(pyfiglet.figlet_format("SCALED"))
+    run_training_pipeline(X_train_scaled, X_test_scaled, y_train, y_test)
+
+    print("\n" + "=" * 60)
+    print("PIPELINE COMPLETE")
+    print("=" * 60)
+    print("Saved artifacts:")
+    print("  - models/model.pkl    (trained classifier)")
+    print("  - models/encoder.pkl  (fitted passthrough encoder)")
+    print("  - models/scaler.pkl   (fitted StandardScaler)")
+    print()
+    print("Run predictions:")
+    print("  python src/predict.py input.json output.json")
+
+
+if __name__ == "__main__":
+    main()
